@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Bang Bing Bo</string>
+    <string name="score">Score</string>
+    <string name="target_score">Target</string>
+    <string name="total_score">Total</string>
+    <string name="level">Level</string>
+    <string name="time">Time</string>
+    <string name="best">Best</string>
+    <string name="column_size_default">5</string>
+    <string name="row_size_default">5</string>
+
 </resources>
