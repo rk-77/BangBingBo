@@ -10,6 +10,8 @@ public interface GameManager {
 
     void initStartingPlayer();
 
+    void initClock();
+
     void setGameStatus();
 
 }

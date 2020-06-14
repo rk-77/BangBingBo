@@ -55,12 +55,12 @@ public class GameBoardManager {
     }
 
     public static List<ImageView> getTileViews(Context context, BoardType boardType) {
-        List<ImageView> imageList = new ArrayList<ImageView>();
-        String[] images = getImageViews(boardType);
+        List<ImageView> imageList = new ArrayList<>();
+        String[] imageNames = getImageViewNames(boardType);
 
         ImageView imageView;
-        for (String image : images) {
-            int id = context.getResources().getIdentifier(image, "id", context.getPackageName());
+        for (String imageName : imageNames) {
+            int id = context.getResources().getIdentifier(imageName, "id", context.getPackageName());
             imageView =  ((Activity) context).findViewById(id);
             imageView.setOnClickListener((View.OnClickListener) context);
             imageList.add(imageView);
@@ -68,7 +68,7 @@ public class GameBoardManager {
         return imageList;
     }
 
-    private static String[] getImageViews(BoardType boardType) {
+    private static String[] getImageViewNames(BoardType boardType) {
         if (boardType == BoardType.BIG) {
             return new String[]
                     {

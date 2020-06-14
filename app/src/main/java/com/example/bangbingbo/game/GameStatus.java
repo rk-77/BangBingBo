@@ -1,13 +1,15 @@
 package com.example.bangbingbo.game;
 
+import com.example.bangbingbo.utils.Constants;
+
 public class GameStatus {
 
     private final int boardSize;
     private final int boardLength;
 
-    private  int[] occupiedField;
-    private  int[] avail;
-    private  int numberOFPiecesInSack;
+    private int[] occupiedField;
+    private int[] avail;
+    private int numberOFPiecesInSack;
 
     private int score;
     private int targetScore;
@@ -15,18 +17,34 @@ public class GameStatus {
     private int level;
     private int totalScore;
 
-    public GameStatus(GameBoardManager.BoardType boardType) {
+    GameBoardManager.BoardType boardType;
+
+    private static GameStatus gameStatus;
+
+    private GameStatus(GameBoardManager.BoardType boardType) {
+        this.boardType = boardType;
         boardLength = boardType.getBoardLength();
         boardSize = boardType.getBoardSize();
         occupiedField = new int[boardSize];
         avail = new int[boardSize];
         numberOFPiecesInSack = boardSize;
 
-        score = 0;
+        score = Constants.INITIAL_SCORE;
         targetScore = 0;
-        time = 99;
-        level = 1;
+        time = Constants.INITIAL_TIME_REMAINING;
+        level = Constants.INITIAL_LEVEL;
         totalScore = 0;
+    }
+
+    public static synchronized GameStatus getInstanceForType(GameBoardManager.BoardType boardType) {
+        if (gameStatus == null) {
+           return gameStatus = new GameStatus(boardType);
+        }
+        else {
+          if (gameStatus.boardType.equals(boardType) )
+              return gameStatus;
+        }
+        throw new RuntimeException("Invalid Boardtype");
     }
 
     public int[] getOccupiedField() {
@@ -91,5 +109,13 @@ public class GameStatus {
 
     public void setTotalScore(int totalScore) {
         this.totalScore = totalScore;
+    }
+
+    public int getBoardSize() {
+        return boardSize;
+    }
+
+    public int getBoardLength() {
+        return boardLength;
     }
 }

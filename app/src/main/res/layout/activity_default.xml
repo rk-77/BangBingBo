@@ -4,8 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".screens.DefaultActivity">
+    tools:context=".Views.DefaultActivity">
 
-    <include layout="@layout/default_layout"/>
+    <include
+        android:id="@+id/include"
+        layout="@layout/default_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="67dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

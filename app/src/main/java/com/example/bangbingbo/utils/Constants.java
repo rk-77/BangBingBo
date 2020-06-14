@@ -14,4 +14,7 @@ public class Constants {
 
     private static final int PADDING_PIECE = 7;
 
+    public static final int INITIAL_SCORE = 0;
+    public static final int INITIAL_TIME_REMAINING = 99;
+    public static final int INITIAL_LEVEL = 1;
 }

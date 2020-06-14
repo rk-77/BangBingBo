@@ -1,8 +1,9 @@
-package com.example.bangbingbo.screens;
+package com.example.bangbingbo.Views;
 
 import android.os.Bundle;
 
 import com.example.bangbingbo.R;
+import com.example.bangbingbo.ViewModels.DefaultActvitiyViewModel;
 import com.example.bangbingbo.game.BoardClickListener;
 import com.example.bangbingbo.game.GameStatus;
 
@@ -13,11 +14,12 @@ import static com.example.bangbingbo.game.GameBoardManager.getTileViews;
 public class DefaultActivity extends BaseActivity {
 
     private BoardType boardType = BoardType.NORMAL;
+    private DefaultActvitiyViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        gameStatus = new GameStatus(boardType);
+        viewModel = new DefaultActvitiyViewModel(images);
     }
 
     @Override
@@ -38,19 +40,11 @@ public class DefaultActivity extends BaseActivity {
     protected void initViews() {
         super.initViews();
         setupBoard();
-        setClickListener();
-    }
-
-    private void setClickListener() {
-        new BoardClickListener(false, images);
     }
 
     private void setupBoard() {
         tiles = getTileDrawablesForBoardType(this, boardType);
         images = getTileViews(this, boardType);
     }
-
-
-    
 
 }

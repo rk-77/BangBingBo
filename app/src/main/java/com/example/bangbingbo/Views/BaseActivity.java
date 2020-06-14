@@ -1,4 +1,4 @@
-package com.example.bangbingbo.screens;
+package com.example.bangbingbo.Views;
 
 import androidx.appcompat.app.AppCompatActivity;
 
