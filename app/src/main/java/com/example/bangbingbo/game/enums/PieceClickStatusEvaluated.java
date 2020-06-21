@@ -1,0 +1,10 @@
+package com.example.bangbingbo.game.enums;
+
+public enum PieceClickStatusEvaluated {
+    FIRST_CLICK_LEGAL,
+    FIRST_CLICK_ILLEGAL_EMPTY_POSITION,
+    SECOND_CLICK_LEGAL_MOVE,
+    SECOND_CLICK_ILLEGAL_MOVE,
+    SECOND_CLICK_SAME_PIECE_TWICE,
+    SECOND_CLICK_ILLEGAL_OCCUPIED_PIECE
+}

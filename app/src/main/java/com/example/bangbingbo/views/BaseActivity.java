@@ -1,4 +1,4 @@
-package com.example.bangbingbo.Views;
+package com.example.bangbingbo.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,13 +6,13 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.bangbingbo.R;
-import com.example.bangbingbo.game.GameStatus;
 
 import java.util.List;
 
@@ -33,13 +33,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     TextView levelView;
 
     private ViewGroup gameContainer;
-    private ImageView floatingPieceView;
+    ImageView floatingPieceView;
     private ImageView imageViewNext;
 
     protected List<Drawable> tiles;
     protected List<ImageView> images;
-
-    protected GameStatus gameStatus;
 
     private int[] startLocationFloatingPiece = new int[2];
 
@@ -96,5 +94,19 @@ public abstract class BaseActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.timeView)).setTypeface(ttfDream);
         ((TextView) findViewById(R.id.targetScoreLabel)).setTypeface(ttfBitwise);
         ((TextView) findViewById(R.id.best)).setTypeface(ttfBitwise);
+    }
+
+    protected void setFloatingPieceParams(ImageView destination) {
+        int[] locationDestination = new int[2];
+        destination.getLocationOnScreen(locationDestination);
+        Log.d(TAG, "Location destination cell" + locationDestination[0] + "  " + locationDestination[1]);
+
+        floatingPieceView.setTranslationX(locationDestination[0]);
+        floatingPieceView.setTranslationY(locationDestination[1]);
+        floatingPieceView.setImageDrawable(destination.getDrawable());
+        floatingPieceView.setVisibility(View.VISIBLE);
+        int[] locationFloatingPiece = new int[2];
+        floatingPieceView.getLocationOnScreen(locationFloatingPiece);
+        Log.d(TAG, "Location floating piece after translation " + locationFloatingPiece[0] + "  " + locationFloatingPiece[1]);
     }
 }

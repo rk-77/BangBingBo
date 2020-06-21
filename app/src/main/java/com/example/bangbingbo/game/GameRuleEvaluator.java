@@ -1,5 +1,7 @@
 package com.example.bangbingbo.game;
 
+import com.example.bangbingbo.game.enums.PieceClickStatusEvaluated;
+
 public class GameRuleEvaluator {
 
     private static GameRuleEvaluator gameRuleEvaluator;
@@ -15,13 +17,21 @@ public class GameRuleEvaluator {
         if (gameRuleEvaluator == null) {
             return gameRuleEvaluator = new GameRuleEvaluator(boardType);
         } else {
-            if (gameRuleEvaluator.gameStatus.boardType.equals(boardType))
+            if (gameStatus.boardType.equals(boardType))
                 return gameRuleEvaluator;
         }
         throw new RuntimeException("Invalid Boardtype");
     }
 
-    public PieceClickStatusEvaluated EvaluateClickStatus(ClickedPiece piece) {
+    public int getPiece1Clicked() {
+        return piece1Clicked;
+    }
+
+    public int getPiece2Clicked() {
+        return piece2Clicked;
+    }
+
+    public PieceClickStatusEvaluated EvaluateClickStatus(GamePiece piece) {
         PieceClickStatusEvaluated statusEvaluated;
         switch (piece.status) {
             case CLICKED_SOURCE:
@@ -34,6 +44,7 @@ public class GameRuleEvaluator {
                 return statusEvaluated;
             default:
                 return null;
+
         }
     }
 
@@ -60,13 +71,13 @@ public class GameRuleEvaluator {
             return isLegalVerticalMove(pieceSource, pieceDestination) ? PieceClickStatusEvaluated.SECOND_CLICK_LEGAL_MOVE : getSecondClickIllegalStatus(pieceSource, pieceDestination);
         }
         if (gameStatus.getOccupiedField()[pieceDestination] != 0) {
-            return PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_DIAGONAL_MOVE_OCCUPIED_POSITION;
+            return PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_OCCUPIED_PIECE;
         }
-        return PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_DIAGONAL_MOVE_NON_OCCUPIED_POSITION;
+        return PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_MOVE;
     }
 
     private PieceClickStatusEvaluated getSecondClickIllegalStatus(int pieceSource, int pieceDestination) {
-        return (gameStatus.getOccupiedField()[pieceDestination] != 0) ? PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_ORTHOGONAL_MOVE_END_OCCUPIED : PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_ORTHOGONAL_MOVE_INBETWEEN_OCCUPIED;
+        return (gameStatus.getOccupiedField()[pieceDestination] != 0) ? PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_OCCUPIED_PIECE : PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_MOVE;
     }
 
     private boolean isLegalVerticalMove(int pieceSource, int pieceDestination) {

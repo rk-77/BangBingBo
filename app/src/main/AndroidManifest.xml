@@ -9,8 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
-        <activity android:name=".Views.BaseActivity"></activity>
-        <activity android:name=".Views.DefaultActivity">
+        <activity android:name=".views.BaseActivity"></activity>
+        <activity android:name=".views.DefaultActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
