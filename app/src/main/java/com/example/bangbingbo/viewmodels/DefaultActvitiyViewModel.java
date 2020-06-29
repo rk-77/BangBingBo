@@ -2,38 +2,36 @@ package com.example.bangbingbo.viewmodels;
 
 import android.widget.ImageView;
 
+import com.example.bangbingbo.game.listeners.GamePieceClickStatusEvaluatedListener;
+import com.example.bangbingbo.game.listeners.StatusAndPiecePositionListener;
 import com.example.bangbingbo.game.listeners.BoardClickListener;
 import com.example.bangbingbo.game.GamePiece;
 import com.example.bangbingbo.game.GameBoardManager;
-import com.example.bangbingbo.game.listeners.GamePieceClickStatusEvaluatedListener;
 import com.example.bangbingbo.game.listeners.GamePieceClickedListener;
 import com.example.bangbingbo.game.GameRuleEvaluator;
 import com.example.bangbingbo.game.enums.PieceClickStatusEvaluated;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultActvitiyViewModel implements GamePieceClickedListener {
 
     private boolean isBusy;
-    private BoardClickListener boardClickListener;
-
     private GameRuleEvaluator gameRuleEvaluator;
-    List<GamePieceClickStatusEvaluatedListener> statusEvaluatedListeners = new ArrayList<>();
+    private PieceClickStatusEvaluated pieceClickStatusEvaluated;
+    StatusAndPiecePositionListener statusAndPiecePositionListener;
+    public GamePieceClickStatusEvaluatedListener boardClickListener;
 
-    public DefaultActvitiyViewModel(List<ImageView> images, GamePieceClickStatusEvaluatedListener statusEvaluatedListener) {
+    public DefaultActvitiyViewModel(List<ImageView> images, StatusAndPiecePositionListener statusAndPiecePositionListener) {
         gameRuleEvaluator = GameRuleEvaluator.getInstanceForType(GameBoardManager.BoardType.NORMAL);
         boardClickListener = new BoardClickListener(images, this);
-        statusEvaluatedListeners.add(boardClickListener);
-        statusEvaluatedListeners.add(statusEvaluatedListener);
+        this.statusAndPiecePositionListener = statusAndPiecePositionListener;
     }
 
     @Override
     public void onGamePieceClicked(GamePiece piece) {
-        PieceClickStatusEvaluated pieceClickStatusEvaluated = gameRuleEvaluator.EvaluateClickStatus(piece);
-        for (GamePieceClickStatusEvaluatedListener listener : statusEvaluatedListeners) {
-            listener.onGamePieceClickedEvaluated(pieceClickStatusEvaluated);
-        }
+        pieceClickStatusEvaluated = gameRuleEvaluator.EvaluateClickStatus(piece);
+        boardClickListener.onGamePieceClickedEvaluated(pieceClickStatusEvaluated);
+        statusAndPiecePositionListener.onGamePieceClickedEvaluated(pieceClickStatusEvaluated);
     }
 
     public GameRuleEvaluator getGameRuleEvaluator() {
@@ -47,5 +45,31 @@ public class DefaultActvitiyViewModel implements GamePieceClickedListener {
 
     public void setBusy(boolean busy) {
         isBusy = busy;
+    }
+
+    public void executeCommands() {
+        processGameLogic();
+        resetClickedViewsForFinishedSecondClick();
+        resetFloatingPiecePositionForLegalMove();
+        setBusy(false);
+    }
+
+    private void processGameLogic() {
+
+    }
+
+    private void resetClickedViewsForFinishedSecondClick() {
+        if(isSecondClickFinished())
+            boardClickListener.onGamePieceClickedEvaluated(PieceClickStatusEvaluated.SECOND_CLICK_FINISHED);
+    }
+
+    private boolean isSecondClickFinished() {
+        return pieceClickStatusEvaluated.equals(PieceClickStatusEvaluated.SECOND_CLICK_LEGAL_MOVE) || pieceClickStatusEvaluated.equals(PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_MOVE) || pieceClickStatusEvaluated.equals(PieceClickStatusEvaluated.SECOND_CLICK_SAME_PIECE_TWICE);
+    }
+
+    private void resetFloatingPiecePositionForLegalMove() {
+        if (pieceClickStatusEvaluated.equals(PieceClickStatusEvaluated.SECOND_CLICK_LEGAL_MOVE)) {
+            statusAndPiecePositionListener.onResetFloatingPiecePosition();
+        }
     }
 }

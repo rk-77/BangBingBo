@@ -1,23 +1,25 @@
 package com.example.bangbingbo.views;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.example.bangbingbo.R;
+import com.example.bangbingbo.game.listeners.StatusAndPiecePositionListener;
 import com.example.bangbingbo.game.listeners.AnimationStartStopListener;
 import com.example.bangbingbo.viewmodels.DefaultActvitiyViewModel;
 import com.example.bangbingbo.animations.GameAnimation;
-import com.example.bangbingbo.game.listeners.GamePieceClickStatusEvaluatedListener;
 import com.example.bangbingbo.game.enums.PieceClickStatusEvaluated;
 
 import static com.example.bangbingbo.game.GameBoardManager.BoardType;
 import static com.example.bangbingbo.game.GameBoardManager.getTileDrawablesForBoardType;
 import static com.example.bangbingbo.game.GameBoardManager.getTileViews;
 
-public class DefaultActivity extends BaseActivity implements GamePieceClickStatusEvaluatedListener, AnimationStartStopListener {
+public class DefaultActivity extends BaseActivity implements StatusAndPiecePositionListener, AnimationStartStopListener {
 
     private BoardType boardType = BoardType.NORMAL;
     private DefaultActvitiyViewModel viewModel;
     private GameAnimation gameAnimation;
+    private PieceClickStatusEvaluated status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class DefaultActivity extends BaseActivity implements GamePieceClickStatu
 
     @Override
     public void onGamePieceClickedEvaluated(PieceClickStatusEvaluated status) {
+        this.status = status;
         switch (status) {
             case FIRST_CLICK_LEGAL:
                 int id = getIDClickedPiece1();
@@ -62,6 +65,15 @@ public class DefaultActivity extends BaseActivity implements GamePieceClickStatu
                 break;
             case SECOND_CLICK_LEGAL_MOVE:
                 gameAnimation.startSlideAnimation(images.get(getIDClickedPiece1()), images.get(getIDClickedPiece2()), floatingPieceView);
+                //updatePiecesDataContainer
+                //checkPAtterns
+                //new piece
+                break;
+            case SECOND_CLICK_ILLEGAL_OCCUPIED_PIECE:
+                setFloatingPieceParams(images.get(getIDClickedPiece2()));
+                break;
+            default:
+                break;
         }
     }
 
@@ -85,6 +97,13 @@ public class DefaultActivity extends BaseActivity implements GamePieceClickStatu
 
     @Override
     public void onAnimationStopped() {
-        viewModel.setBusy(false);
+        viewModel.executeCommands();
+    }
+
+    @Override
+    public void onResetFloatingPiecePosition() {
+        floatingPieceView.setTranslationX(0);
+        floatingPieceView.setTranslationY(0);
+        floatingPieceView.setVisibility(View.VISIBLE);
     }
 }

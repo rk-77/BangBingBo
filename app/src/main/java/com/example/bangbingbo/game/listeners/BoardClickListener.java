@@ -11,7 +11,8 @@ import java.util.List;
 
 public class BoardClickListener implements View.OnClickListener, GamePieceClickStatusEvaluatedListener {
 
-    private boolean isOriginImageViewClicked, isDestinationImageViewClicked;
+    private boolean isOriginImageViewClicked;
+    private boolean isDestinationImageViewClicked;
     private List<ImageView> images;
     private GamePieceClickedListener gamePieceClickedListener;
 
@@ -45,6 +46,7 @@ public class BoardClickListener implements View.OnClickListener, GamePieceClickS
     }
 
     synchronized private void triggerPieceClickEvent(PieceClickStatus status, int i) {
+        //TODO: set busy
         gamePieceClickedListener.onGamePieceClicked(new GamePiece(status, images.get(i), i));
     }
 
@@ -60,6 +62,11 @@ public class BoardClickListener implements View.OnClickListener, GamePieceClickS
         return view.getId() == images.get(i).getId();
     }
 
+    private void resetImageViewsClicked() {
+       isOriginImageViewClicked = false;
+       isDestinationImageViewClicked = false;
+    }
+
     @Override
     public void onGamePieceClickedEvaluated(PieceClickStatusEvaluated status) {
         switch (status) {
@@ -70,24 +77,16 @@ public class BoardClickListener implements View.OnClickListener, GamePieceClickS
                 break;
             case SECOND_CLICK_LEGAL_MOVE:
                 isDestinationImageViewClicked = true;
-                //start slide animation, done
-                //TODO: updatePiecesDataContainer
-                //TODO: checkPattern
-                //TODO: resetImageViewClicked
-                //TODO: new Piece()
-                //TODO: resetFloatingPiece
                 break;
             case SECOND_CLICK_ILLEGAL_MOVE:
-                //resetImageViewClicked
                 break;
             case SECOND_CLICK_SAME_PIECE_TWICE:
-               // resetImageViewsClicked();
                 break;
             case SECOND_CLICK_ILLEGAL_OCCUPIED_PIECE:
                 isDestinationImageViewClicked = false;
-                //setFloatingPiece()
-                //image2 = 0
-                //getLegalMoves()
+                break;
+            case SECOND_CLICK_FINISHED:
+                resetImageViewsClicked();
                 break;
             default:
                 break;

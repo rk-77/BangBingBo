@@ -109,4 +109,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         floatingPieceView.getLocationOnScreen(locationFloatingPiece);
         Log.d(TAG, "Location floating piece after translation " + locationFloatingPiece[0] + "  " + locationFloatingPiece[1]);
     }
+
+    protected void resetFloatingPiecePostion() {
+        floatingPieceView.setTranslationX(0);
+        floatingPieceView.setTranslationY(0);
+        floatingPieceView.setVisibility(View.VISIBLE);
+    }
 }
