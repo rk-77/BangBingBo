@@ -7,7 +7,7 @@ public class GameStatus {
     private final int boardSize;
     private final int boardLength;
 
-    private int[] occupiedField;
+    private int[] occupiedFields;
     private int[] avail;
     private int numberOFPiecesInSack;
 
@@ -17,6 +17,7 @@ public class GameStatus {
     private int level;
     private int totalScore;
 
+
     GameBoardManager.BoardType boardType;
 
     private static GameStatus gameStatus;
@@ -25,7 +26,7 @@ public class GameStatus {
         this.boardType = boardType;
         boardLength = boardType.getBoardLength();
         boardSize = boardType.getBoardSize();
-        occupiedField = new int[boardSize];
+        occupiedFields = new int[boardSize];
         avail = new int[boardSize];
         numberOFPiecesInSack = boardSize;
 
@@ -47,12 +48,12 @@ public class GameStatus {
         throw new RuntimeException("Invalid Boardtype");
     }
 
-    public int[] getOccupiedField() {
-        return occupiedField;
+    public int[] getOccupiedFields() {
+        return occupiedFields;
     }
 
-    public void setOccupiedField(int[] occupiedField) {
-        this.occupiedField = occupiedField;
+    public void setOccupiedFields(int[] occupiedFields) {
+        this.occupiedFields = occupiedFields;
     }
 
     public int[] getAvail() {
@@ -118,4 +119,5 @@ public class GameStatus {
     public int getBoardLength() {
         return boardLength;
     }
+
 }

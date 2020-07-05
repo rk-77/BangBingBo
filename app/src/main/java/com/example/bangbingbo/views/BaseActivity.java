@@ -41,6 +41,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private int[] startLocationFloatingPiece = new int[2];
 
+    public List<ImageView> getImages() {
+        return images;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,7 +100,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.best)).setTypeface(ttfBitwise);
     }
 
-    protected void setFloatingPieceParams(ImageView destination) {
+    public void setFloatingPieceParams(ImageView destination) {
         int[] locationDestination = new int[2];
         destination.getLocationOnScreen(locationDestination);
         Log.d(TAG, "Location destination cell" + locationDestination[0] + "  " + locationDestination[1]);
@@ -114,5 +118,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         floatingPieceView.setTranslationX(0);
         floatingPieceView.setTranslationY(0);
         floatingPieceView.setVisibility(View.VISIBLE);
+    }
+
+    public ImageView getFloatingPieceView() {
+        return floatingPieceView;
     }
 }

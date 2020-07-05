@@ -73,14 +73,8 @@ public class BoardClickListener implements View.OnClickListener, GamePieceClickS
             case FIRST_CLICK_LEGAL:
                 isOriginImageViewClicked = true;
                 break;
-            case FIRST_CLICK_ILLEGAL_EMPTY_POSITION:
-                break;
             case SECOND_CLICK_LEGAL_MOVE:
                 isDestinationImageViewClicked = true;
-                break;
-            case SECOND_CLICK_ILLEGAL_MOVE:
-                break;
-            case SECOND_CLICK_SAME_PIECE_TWICE:
                 break;
             case SECOND_CLICK_ILLEGAL_OCCUPIED_PIECE:
                 isDestinationImageViewClicked = false;
@@ -88,8 +82,7 @@ public class BoardClickListener implements View.OnClickListener, GamePieceClickS
             case SECOND_CLICK_FINISHED:
                 resetImageViewsClicked();
                 break;
-            default:
-                break;
         }
+        throw new IllegalArgumentException("Ungültiger Status " + status.name());
     }
 }

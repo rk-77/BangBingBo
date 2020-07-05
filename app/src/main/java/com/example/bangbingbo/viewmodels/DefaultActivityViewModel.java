@@ -1,37 +1,32 @@
 package com.example.bangbingbo.viewmodels;
 
-import android.widget.ImageView;
-
 import com.example.bangbingbo.game.listeners.GamePieceClickStatusEvaluatedListener;
-import com.example.bangbingbo.game.listeners.StatusAndPiecePositionListener;
 import com.example.bangbingbo.game.listeners.BoardClickListener;
 import com.example.bangbingbo.game.GamePiece;
-import com.example.bangbingbo.game.GameBoardManager;
 import com.example.bangbingbo.game.listeners.GamePieceClickedListener;
 import com.example.bangbingbo.game.GameRuleEvaluator;
 import com.example.bangbingbo.game.enums.PieceClickStatusEvaluated;
+import com.example.bangbingbo.views.DefaultActivity;
 
-import java.util.List;
-
-public class DefaultActvitiyViewModel implements GamePieceClickedListener {
+public class DefaultActivityViewModel implements GamePieceClickedListener {
 
     private boolean isBusy;
     private GameRuleEvaluator gameRuleEvaluator;
     private PieceClickStatusEvaluated pieceClickStatusEvaluated;
-    StatusAndPiecePositionListener statusAndPiecePositionListener;
+    DefaultActivity defaultActivity;
     public GamePieceClickStatusEvaluatedListener boardClickListener;
 
-    public DefaultActvitiyViewModel(List<ImageView> images, StatusAndPiecePositionListener statusAndPiecePositionListener) {
-        gameRuleEvaluator = GameRuleEvaluator.getInstanceForType(GameBoardManager.BoardType.NORMAL);
-        boardClickListener = new BoardClickListener(images, this);
-        this.statusAndPiecePositionListener = statusAndPiecePositionListener;
+    public DefaultActivityViewModel(DefaultActivity defaultActivity) {
+        gameRuleEvaluator = GameRuleEvaluator.getInstanceForType(defaultActivity.getBoardType());
+        boardClickListener = new BoardClickListener(defaultActivity.getImages(), this);
+        this.defaultActivity = defaultActivity;
     }
 
     @Override
     public void onGamePieceClicked(GamePiece piece) {
         pieceClickStatusEvaluated = gameRuleEvaluator.EvaluateClickStatus(piece);
         boardClickListener.onGamePieceClickedEvaluated(pieceClickStatusEvaluated);
-        statusAndPiecePositionListener.onGamePieceClickedEvaluated(pieceClickStatusEvaluated);
+        defaultActivity.onGamePieceClickedEvaluated(pieceClickStatusEvaluated);
     }
 
     public GameRuleEvaluator getGameRuleEvaluator() {
@@ -69,7 +64,7 @@ public class DefaultActvitiyViewModel implements GamePieceClickedListener {
 
     private void resetFloatingPiecePositionForLegalMove() {
         if (pieceClickStatusEvaluated.equals(PieceClickStatusEvaluated.SECOND_CLICK_LEGAL_MOVE)) {
-            statusAndPiecePositionListener.onResetFloatingPiecePosition();
+            defaultActivity.onResetFloatingPiecePosition();
         }
     }
 }

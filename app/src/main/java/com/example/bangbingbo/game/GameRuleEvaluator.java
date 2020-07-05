@@ -1,6 +1,13 @@
 package com.example.bangbingbo.game;
 
 import com.example.bangbingbo.game.enums.PieceClickStatusEvaluated;
+import com.example.bangbingbo.game.listeners.commandexecutors.gamelogic.CommandExecutor;
+import com.example.bangbingbo.game.listeners.commandexecutors.gamelogic.FirstClickLegalCommandExecutor;
+import com.example.bangbingbo.game.listeners.commandexecutors.gamelogic.SecondClickIllegalMoveCommandExecutor;
+import com.example.bangbingbo.game.listeners.commandexecutors.gamelogic.SecondClickLegalMoveCommandExecutor;
+import com.example.bangbingbo.game.listeners.commandexecutors.gamelogic.SecondClickSamePieceTwiceCommandExecutor;
+
+import java.util.HashMap;
 
 public class GameRuleEvaluator {
 
@@ -8,17 +15,42 @@ public class GameRuleEvaluator {
     private static GameStatus gameStatus;
     int piece1Clicked;
     int piece2Clicked;
+    HashMap<PieceClickStatusEvaluated, CommandExecutor> commandExecutors;
 
     private GameRuleEvaluator(GameBoardManager.BoardType boardType) {
         gameStatus = GameStatus.getInstanceForType(boardType);
+    //    initCommandExecutors();
+    }
+/*
+TODO: Use CommandExecutorHelper
+    private void initCommandExecutors() {
+        commandExecutors = new HashMap<>();
+        commandExecutors.put(PieceClickStatusEvaluated.FIRST_CLICK_LEGAL, new FirstClickLegalCommandExecutor());
+        commandExecutors.put(PieceClickStatusEvaluated.SECOND_CLICK_LEGAL_MOVE, new SecondClickLegalMoveCommandExecutor());
+        commandExecutors.put(PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_MOVE, new SecondClickIllegalMoveCommandExecutor());
+        commandExecutors.put(PieceClickStatusEvaluated.SECOND_CLICK_SAME_PIECE_TWICE, new SecondClickSamePieceTwiceCommandExecutor());
+    }
+*/
+    public CommandExecutor getCommandExecutorForStatus(PieceClickStatusEvaluated statusEvaluated) {
+        switch (statusEvaluated) {
+            case FIRST_CLICK_LEGAL:
+                return commandExecutors.get(PieceClickStatusEvaluated.FIRST_CLICK_LEGAL);
+            case SECOND_CLICK_LEGAL_MOVE:
+                return commandExecutors.get(PieceClickStatusEvaluated.SECOND_CLICK_LEGAL_MOVE);
+            case SECOND_CLICK_ILLEGAL_MOVE:
+                return commandExecutors.get(PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_MOVE);
+            case SECOND_CLICK_SAME_PIECE_TWICE:
+                return commandExecutors.get(PieceClickStatusEvaluated.SECOND_CLICK_SAME_PIECE_TWICE);
+        }
+        throw new IllegalArgumentException("No command defined for Status " + statusEvaluated.name());
     }
 
     public static synchronized GameRuleEvaluator getInstanceForType(GameBoardManager.BoardType boardType) {
         if (gameRuleEvaluator == null) {
             return gameRuleEvaluator = new GameRuleEvaluator(boardType);
-        } else {
-            if (gameStatus.boardType.equals(boardType))
-                return gameRuleEvaluator;
+        }
+        if (gameStatus.boardType.equals(boardType)) {
+            return gameRuleEvaluator;
         }
         throw new RuntimeException("Invalid Boardtype");
     }
@@ -42,14 +74,12 @@ public class GameRuleEvaluator {
                 statusEvaluated = evaluateSecondClick(piece1Clicked, piece.clickIndex);
                 piece2Clicked = statusEvaluated.equals(PieceClickStatusEvaluated.SECOND_CLICK_LEGAL_MOVE) ? piece.clickIndex : piece2Clicked;
                 return statusEvaluated;
-            default:
-                return null;
-
         }
+        throw new IllegalArgumentException("Illegal status " + piece.status.name());
     }
 
     private PieceClickStatusEvaluated evaluateFirstClick(int pieceSource) {
-        if (gameStatus.getOccupiedField()[pieceSource] == 0) {
+        if (gameStatus.getOccupiedFields()[pieceSource] == 0) {
             return PieceClickStatusEvaluated.FIRST_CLICK_ILLEGAL_EMPTY_POSITION;
         }
         return PieceClickStatusEvaluated.FIRST_CLICK_LEGAL;
@@ -70,14 +100,14 @@ public class GameRuleEvaluator {
         if (piecesInEqualColumn(pieceSource, pieceDestination)) {
             return isLegalVerticalMove(pieceSource, pieceDestination) ? PieceClickStatusEvaluated.SECOND_CLICK_LEGAL_MOVE : getSecondClickIllegalStatus(pieceSource, pieceDestination);
         }
-        if (gameStatus.getOccupiedField()[pieceDestination] != 0) {
+        if (gameStatus.getOccupiedFields()[pieceDestination] != 0) {
             return PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_OCCUPIED_PIECE;
         }
         return PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_MOVE;
     }
 
     private PieceClickStatusEvaluated getSecondClickIllegalStatus(int pieceSource, int pieceDestination) {
-        return (gameStatus.getOccupiedField()[pieceDestination] != 0) ? PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_OCCUPIED_PIECE : PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_MOVE;
+        return (gameStatus.getOccupiedFields()[pieceDestination] != 0) ? PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_OCCUPIED_PIECE : PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_MOVE;
     }
 
     private boolean isLegalVerticalMove(int pieceSource, int pieceDestination) {
@@ -89,7 +119,7 @@ public class GameRuleEvaluator {
 
     private boolean fieldsInbetweenTopToBottomMoveEmpty(int pieceSource, int pieceDestination) {
         for (int i = pieceSource + gameStatus.getBoardLength(); i <= pieceDestination; i += gameStatus.getBoardLength()) {
-            if (gameStatus.getOccupiedField()[i] != 0) return false;
+            if (gameStatus.getOccupiedFields()[i] != 0) return false;
         }
         return true;
     }
@@ -109,14 +139,14 @@ public class GameRuleEvaluator {
 
     private boolean fieldsInbetweenLeftToRightMoveEmpty(int pieceSource, int pieceDestination) {
         for (int i = pieceSource + 1; i <= pieceDestination; i++) {
-            if (gameStatus.getOccupiedField()[i] != 0) return false;
+            if (gameStatus.getOccupiedFields()[i] != 0) return false;
         }
         return true;
     }
 
     private boolean fieldsInbetweenRightToLeftMoveEmpty(int pieceSource, int pieceDestination) {
         for (int i = pieceSource - 1; i >= pieceDestination; i--) {
-            if (gameStatus.getOccupiedField()[i] != 0) return false;
+            if (gameStatus.getOccupiedFields()[i] != 0) return false;
         }
         return true;
     }
