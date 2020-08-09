@@ -8,4 +8,6 @@ public interface GamePieceClickedListener {
 
     boolean isBusy();
 
+    public void setBusy(boolean busy);
+
 }

@@ -46,7 +46,7 @@ public class BoardClickListener implements View.OnClickListener, GamePieceClickS
     }
 
     synchronized private void triggerPieceClickEvent(PieceClickStatus status, int i) {
-        //TODO: set busy
+        gamePieceClickedListener.setBusy(true);
         gamePieceClickedListener.onGamePieceClicked(new GamePiece(status, images.get(i), i));
     }
 
@@ -76,10 +76,15 @@ public class BoardClickListener implements View.OnClickListener, GamePieceClickS
             case SECOND_CLICK_LEGAL_MOVE:
                 isDestinationImageViewClicked = true;
                 break;
+            case SECOND_CLICK_ILLEGAL_MOVE:
+                resetImageViewsClicked();
+                break;
             case SECOND_CLICK_ILLEGAL_OCCUPIED_PIECE:
                 isDestinationImageViewClicked = false;
                 break;
-            case SECOND_CLICK_FINISHED:
+            case SECOND_CLICK_SAME_PIECE_TWICE:
+                resetImageViewsClicked();
+            case SECOND_CLICK_LEGAL_MOVE_FINISHED: //called after second_click_legal_move and animation
                 resetImageViewsClicked();
                 break;
         }

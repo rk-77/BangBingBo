@@ -1,19 +1,24 @@
 package com.example.bangbingbo.viewmodels;
 
-import com.example.bangbingbo.game.listeners.GamePieceClickStatusEvaluatedListener;
-import com.example.bangbingbo.game.listeners.BoardClickListener;
 import com.example.bangbingbo.game.GamePiece;
-import com.example.bangbingbo.game.listeners.GamePieceClickedListener;
 import com.example.bangbingbo.game.GameRuleEvaluator;
 import com.example.bangbingbo.game.enums.PieceClickStatusEvaluated;
+import com.example.bangbingbo.game.listeners.BoardClickListener;
+import com.example.bangbingbo.game.listeners.GamePieceClickStatusEvaluatedListener;
+import com.example.bangbingbo.game.listeners.GamePieceClickedListener;
+import com.example.bangbingbo.game.listeners.commandexecutors.CommandExecutorHelper;
 import com.example.bangbingbo.views.DefaultActivity;
+
+import static com.example.bangbingbo.game.enums.PieceClickStatusEvaluated.FIRST_CLICK_LEGAL;
+import static com.example.bangbingbo.game.enums.PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_OCCUPIED_PIECE;
+import static com.example.bangbingbo.game.enums.PieceClickStatusEvaluated.SECOND_CLICK_LEGAL_MOVE;
 
 public class DefaultActivityViewModel implements GamePieceClickedListener {
 
     private boolean isBusy;
     private GameRuleEvaluator gameRuleEvaluator;
     private PieceClickStatusEvaluated pieceClickStatusEvaluated;
-    DefaultActivity defaultActivity;
+    private DefaultActivity defaultActivity;
     public GamePieceClickStatusEvaluatedListener boardClickListener;
 
     public DefaultActivityViewModel(DefaultActivity defaultActivity) {
@@ -26,7 +31,15 @@ public class DefaultActivityViewModel implements GamePieceClickedListener {
     public void onGamePieceClicked(GamePiece piece) {
         pieceClickStatusEvaluated = gameRuleEvaluator.EvaluateClickStatus(piece);
         boardClickListener.onGamePieceClickedEvaluated(pieceClickStatusEvaluated);
-        defaultActivity.onGamePieceClickedEvaluated(pieceClickStatusEvaluated);
+        if (isStartingAnimation(pieceClickStatusEvaluated)) {
+            defaultActivity.onGamePieceClickedEvaluated(pieceClickStatusEvaluated); //command execution after animation finished
+        } else {
+            executeCommands();
+        }
+    }
+
+    private boolean isStartingAnimation(PieceClickStatusEvaluated pieceClickStatusEvaluated) {
+        return (pieceClickStatusEvaluated.equals(FIRST_CLICK_LEGAL) || pieceClickStatusEvaluated.equals(SECOND_CLICK_LEGAL_MOVE) || pieceClickStatusEvaluated.equals(SECOND_CLICK_ILLEGAL_OCCUPIED_PIECE));
     }
 
     public GameRuleEvaluator getGameRuleEvaluator() {
@@ -38,33 +51,19 @@ public class DefaultActivityViewModel implements GamePieceClickedListener {
         return isBusy;
     }
 
+    @Override
     public void setBusy(boolean busy) {
         isBusy = busy;
     }
 
+
+    public PieceClickStatusEvaluated getPieceClickStatusEvaluated() {
+        return pieceClickStatusEvaluated;
+    }
+
     public void executeCommands() {
-        processGameLogic();
-        resetClickedViewsForFinishedSecondClick();
-        resetFloatingPiecePositionForLegalMove();
+        CommandExecutorHelper.executeCommands(defaultActivity);
         setBusy(false);
     }
 
-    private void processGameLogic() {
-
-    }
-
-    private void resetClickedViewsForFinishedSecondClick() {
-        if(isSecondClickFinished())
-            boardClickListener.onGamePieceClickedEvaluated(PieceClickStatusEvaluated.SECOND_CLICK_FINISHED);
-    }
-
-    private boolean isSecondClickFinished() {
-        return pieceClickStatusEvaluated.equals(PieceClickStatusEvaluated.SECOND_CLICK_LEGAL_MOVE) || pieceClickStatusEvaluated.equals(PieceClickStatusEvaluated.SECOND_CLICK_ILLEGAL_MOVE) || pieceClickStatusEvaluated.equals(PieceClickStatusEvaluated.SECOND_CLICK_SAME_PIECE_TWICE);
-    }
-
-    private void resetFloatingPiecePositionForLegalMove() {
-        if (pieceClickStatusEvaluated.equals(PieceClickStatusEvaluated.SECOND_CLICK_LEGAL_MOVE)) {
-            defaultActivity.onResetFloatingPiecePosition();
-        }
-    }
 }

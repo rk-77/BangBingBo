@@ -120,4 +120,8 @@ public class GameStatus {
         return boardLength;
     }
 
+    public GameBoardManager.BoardType getBoardType() {
+        return boardType;
+    }
+
 }

@@ -71,7 +71,7 @@ public class DefaultActivity extends BaseActivity implements StatusAndPiecePosit
 
     @Override
     public void onAnimationStarted() {
-        viewModel.setBusy(true);
+      //  viewModel.setBusy(true);
     }
 
     @Override
@@ -92,6 +92,10 @@ public class DefaultActivity extends BaseActivity implements StatusAndPiecePosit
 
     public BoardType getBoardType() {
         return boardType;
+    }
+
+    public DefaultActivityViewModel getViewModel() {
+        return viewModel;
     }
 
 }
